@@ -8,7 +8,6 @@ from .models import *
 
 class CarritoView(generics.CreateAPIView):
     serializer_class = CarritoSerializer
-    model = Carrito
 
     def get(self, request):
         carritos = Carrito.objects.all()
@@ -25,5 +24,24 @@ class CarritoView(generics.CreateAPIView):
         return Response(serializer.data, status=200)
     
 
-
+class DetalleCarritoView(generics.CreateAPIView):
+    serializer_class = DetalleCarritoSerializer
     
+    def get(self, request):
+        pass
+
+    def post(self, request):
+        pass
+
+
+class ProductoView(generics.CreateAPIView):
+    serializer_class = ProductoSerializer
+
+    def get(self, request, pk):
+
+        if pk==0:
+            productos = Producto.objects.all()
+            data = [ProductoSerializer(producto).data for producto in productos]
+            return Response(data, status=200)
+        
+
