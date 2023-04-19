@@ -16,7 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from carrito_backend.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('crear-carrito/', CarritoView.as_view()),
+    path('obtener-carritos/', CarritoView.as_view())
+
 ]

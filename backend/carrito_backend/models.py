@@ -12,7 +12,7 @@ class Producto(models.Model):
         return (self.nombre)
 
 class Carrito(models.Model):
-    fecha=models.DateField()
+    fecha=models.DateField(auto_now=False, auto_now_add=True)
 
     @property
     def precioTotal(self):
