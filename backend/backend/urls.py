@@ -21,6 +21,6 @@ from carrito_backend.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('crear-carrito/', CarritoView.as_view()),
-    path('obtener-carritos/', CarritoView.as_view()),
+    path('listar-carritos/<int:pk>', CarritoView.as_view()),
     path('listar-productos/<int:pk>/', ProductoView.as_view()),
 ]

@@ -12,7 +12,13 @@ class Producto(models.Model):
         return (self.nombre)
 
 class Carrito(models.Model):
+    listaEstados = [
+        ('N', 'NUEVO'),
+        ('C', 'COMPRANDO'),
+        ('F', 'FINALIZADO')
+    ]
     fecha=models.DateField(auto_now=False, auto_now_add=True)
+    estado=models.CharField(max_length=1, default='N', choices=listaEstados)
 
     @property
     def precioTotal(self):
@@ -20,8 +26,8 @@ class Carrito(models.Model):
 
 class DetalleCarrito(models.Model):
     id_carrito=models.ForeignKey(Carrito, on_delete=models.CASCADE)
-    id_producto=models.ForeignKey(Producto, on_delete=models.CASCADE)
-    cantidad=models.IntegerField()        
+    id_producto=models.ForeignKey(Producto, on_delete=models.CASCADE, null=True)
+    cantidad=models.IntegerField(null=True)        
 
     @property
     def subtotal(self):
