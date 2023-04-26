@@ -17,6 +17,7 @@ class CarritoView(generics.CreateAPIView):
             return Response(data, status=200)
 
         carrito = Carrito.objects.get(id=pk)
+        print(carrito.precioTotal)
         data = CarritoSerializer(carrito).data
         return Response(data, status=200)
 
@@ -34,15 +35,24 @@ class CarritoView(generics.CreateAPIView):
 class DetalleCarritoView(generics.CreateAPIView):
     serializer_class = DetalleCarritoSerializer
     
-    def get(self, request):
-        pass
+    def get(self, request, pk=None):
+        if pk == None:
+            carritos = DetalleCarrito.objects.all()
+            data = [DetalleCarritoSerializer(carrito).data for carrito in carritos]
+            return Response(data, status=200)
+
+        carrito = DetalleCarrito.objects.get(id=pk)
+        data = DetalleCarritoSerializer(carrito).data
+        return Response(data, status=200)
 
     def post(self, request):
 
+        producto = Producto.objects.get(codigo_ean=request.data['codigo_ean'])
+
         data = {
             'id_carrito': request.data['id_carrito'],
-            'id_producto': request.data['id_carrito'],
-            'cantidad': request.data['id_carrito']
+            'id_producto': producto.id,
+            'cantidad': request.data['cantidad']
         }
 
         serializer = DetalleCarritoSerializer(data=data)
@@ -50,23 +60,22 @@ class DetalleCarritoView(generics.CreateAPIView):
             serializer.save()
         else:
             return Response(serializer.errors, status=500)
+        
         return Response(serializer.data, status=200)
 
 
 class ProductoView(generics.CreateAPIView):
     serializer_class = ProductoSerializer
 
-    def get(self, request, pk):
+    def get(self, request, pk=None):
 
-        if pk==0:
+        if pk==None:
             productos = Producto.objects.all()
             data = [ProductoSerializer(producto).data for producto in productos]
-            print(data)
             return Response(data, status=200)
         
-        producto = Producto.objects.get(id=pk)
+        producto = Producto.objects.get(codigo_ean=pk)
         data = ProductoSerializer(producto).data
-        print(data)
         return Response(data, status=200)
 
 

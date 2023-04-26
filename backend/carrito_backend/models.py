@@ -19,10 +19,13 @@ class Carrito(models.Model):
     ]
     fecha=models.DateField(auto_now=False, auto_now_add=True)
     estado=models.CharField(max_length=1, default='N', choices=listaEstados)
-
+    
+    #TODO: Obtener el subtotal de los DetalleCarrito y sumarlos 
     @property
     def precioTotal(self):
-        pass
+        lista_detalles = DetalleCarrito.objects.filter(id_carrito=self.id)
+
+        
 
 class DetalleCarrito(models.Model):
     id_carrito=models.ForeignKey(Carrito, on_delete=models.CASCADE)
@@ -31,6 +34,6 @@ class DetalleCarrito(models.Model):
 
     @property
     def subtotal(self):
-        return self.cantidad * self.productos_set.all()
+        return self.cantidad * self.id_producto.precio
 
     
