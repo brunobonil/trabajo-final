@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('crear-carrito/', CarritoView.as_view()),
     path('listar-carritos/<int:pk>', CarritoView.as_view()),
+    path('listar-carritos/', CarritoView.as_view()),
     path('listar-productos/<int:pk>/', ProductoView.as_view()),
     path('listar-productos/', ProductoView.as_view()),
     path('crear-detalle/', DetalleCarritoView.as_view()),

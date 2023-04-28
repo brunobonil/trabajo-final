@@ -10,8 +10,8 @@ class CarritoView(generics.CreateAPIView):
     serializer_class = CarritoSerializer
     
 
-    def get(self, request, pk):
-        if pk==0:
+    def get(self, request, pk=None):
+        if pk==None:
             carritos = Carrito.objects.all()
             data = [CarritoSerializer(carrito).data for carrito in carritos]
             return Response(data, status=200)
