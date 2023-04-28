@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import QrScanner from 'react-qr-scanner';
 import '../App.css';
+import { redirect } from 'react-router';
 
 
 
@@ -17,19 +18,17 @@ export const MainPage = () => {
     })
     const data = await res.json();
     console.log(data)
+    window.location.href = `/carrito/${data.id}`;
   }
 
 
   return (
-      <div className='App-header'>
+      <div className='main-pg'>
         ¡Bienvenido a su asistente de compras!
         <button className='crear-carrito-btn' onClick={() => crearCarrito()}>
           CREAR CARRITO
         </button>
       </div>
-
-      
-        
   );
 }
 

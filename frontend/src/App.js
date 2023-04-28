@@ -1,7 +1,8 @@
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Routes, Route } from 'react-router';
-import { MainPage } from './components/MainPage';
 import './App.css';
+import { MainPage } from './components/MainPage';
+import Carrito from './components/Carrito';
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <div>
         <Routes>
           <Route path="/" element={<MainPage/>}/>
+          <Route path="/carrito/:id" element={<Carrito/>}/>
         </Routes>
       </div>
     </Router>  
