@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router';
 import './App.css';
 import { MainPage } from './components/MainPage';
 import Carrito from './components/Carrito';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (

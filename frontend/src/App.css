@@ -46,8 +46,19 @@
   border: none;
 }
 
+
 .add-btn:hover {
   background-color: darkred;
   cursor: pointer;
 }
 
+.ean-input {
+  padding: 10px;
+  width: 15%;
+  display: flex;
+  margin-top: 1rem;
+}
+/* 
+.lista-prod {
+  margin-right: 50%;
+} */
