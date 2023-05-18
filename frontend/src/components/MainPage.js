@@ -1,12 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
-import QrScanner from 'react-qr-scanner';
 import '../App.css';
 import { redirect } from 'react-router';
 
 
 
 const API = 'http://192.168.100.156:8000'
-  
+//const API = process.env.BACKEND_API
 
 export const MainPage = () => {
 

@@ -29,7 +29,7 @@ urlpatterns = [
     path('listar-detalles/<int:pk>/', DetalleCarritoView.as_view()),
     path('listar-detalles/', DetalleCarritoView.as_view()),
     path('modificar-estado/<int:pk>', CarritoView.as_view()),
-    path('listar-productos/<int:pk>/', ListadoCarritoView.as_view()),
+    #path('listar-productos/<int:pk>/', ListadoCarritoView.as_view()),
     
 
 ]

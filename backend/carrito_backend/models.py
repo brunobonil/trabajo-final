@@ -30,6 +30,9 @@ class Carrito(models.Model):
 class DetalleCarrito(models.Model):
     id_carrito=models.ForeignKey(Carrito, on_delete=models.CASCADE)
     id_producto=models.ForeignKey(Producto, on_delete=models.CASCADE, null=True)
+    nombre = models.CharField(max_length=60, null=True)
+    descripcion=models.CharField(max_length=300, null=True)
+    precio=models.FloatField(null=True)
     cantidad=models.IntegerField(null=True)        
 
     @property

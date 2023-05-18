@@ -56,18 +56,26 @@ class DetalleCarritoView(generics.CreateAPIView):
         # Obtener carrito
         carrito = Carrito.objects.get(id=request.data['id_carrito'])
         
-        # Obtener detalle del carrito
-        detalles = DetalleCarrito.objects.filter(id_carrito=carrito.id)
         
-        for i in detalles:
-            print(i)
         # Obtener producto
         producto = Producto.objects.get(codigo_ean=request.data['codigo_ean'])
+
+        # Obtener detalle del carrito
+        detalle_exist = DetalleCarrito.objects.filter(id_carrito=carrito.id, id_producto=producto.id)
         
+        #Verifica si existe el producto en el carro, en caso de existir actualiza la cantidad   
+        if detalle_exist:
+            detalle = detalle_exist.get()
+            detalle.cantidad += 1
+            detalle.save()
+            return Response(status=200)
 
         data = {
             'id_carrito': request.data['id_carrito'],
             'id_producto': producto.id,
+            'nombre': producto.nombre,
+            'descripcion': producto.descripcion,
+            'precio': producto.precio,
             'cantidad': request.data['cantidad']
         }
 
@@ -95,10 +103,10 @@ class ProductoView(generics.CreateAPIView):
         data = ProductoSerializer(producto).data
         return Response(data, status=200)
     
-class ListadoCarritoView(generics.CreateAPIView):
+# class ListadoCarritoView(generics.CreateAPIView):
 
-    def get(self, request, pk):
-        productosCarrito = DetalleCarrito.objects.filter(id_producto=pk)
-        data = [DetalleCarritoSerializer(prod).data for prod in productosCarrito]
-        return Response(data, status=200)
+#     def get(self, request, pk):
+#         productosCarrito = DetalleCarrito.objects.filter(id_producto=pk)
+#         data = [DetalleCarritoSerializer(prod).data for prod in productosCarrito]
+#         return Response(data, status=200)
 
