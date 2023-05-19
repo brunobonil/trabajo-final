@@ -5,12 +5,12 @@ import { redirect } from 'react-router';
 
 
 const API = 'http://192.168.100.156:8000'
-//const API = process.env.BACKEND_API
+//const API = process.env.BACKEND_API;
 
 export const MainPage = () => {
 
   const crearCarrito = async () => {
-    const res = await fetch(`${API}/crear-carrito/`,{
+    const res = await fetch(`${API}/carrito/`,{
       'mode': 'cors',
       'method': 'POST',
       'headers': {'Content-Type': 'application/json'},

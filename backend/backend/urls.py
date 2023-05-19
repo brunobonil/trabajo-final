@@ -20,15 +20,26 @@ from carrito_backend.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('crear-carrito/', CarritoView.as_view()),
-    path('listar-carritos/<int:pk>', CarritoView.as_view()),
-    path('listar-carritos/', CarritoView.as_view()),
-    path('listar-productos/<int:pk>/', ProductoView.as_view()),
-    path('listar-productos/', ProductoView.as_view()),
-    path('crear-detalle/', DetalleCarritoView.as_view()),
-    path('listar-detalles/<int:pk>/', DetalleCarritoView.as_view()),
-    path('listar-detalles/', DetalleCarritoView.as_view()),
-    path('modificar-estado/<int:pk>', CarritoView.as_view()),
+    path('carrito/', CarritoView.as_view()),
+    path('carrito/<int:pk>', CarritoView.as_view()),
+
+    path('detalle-carrito/', DetalleCarritoView.as_view()),
+    path('detalle-carrito/<int:pk>', DetalleCarritoView.as_view()),
+
+
+    path('productos/', ProductoView.as_view()),
+    path('productos/<int:pk>', ProductoView.as_view()),
+
+    # path('crear-carrito/', CarritoView.as_view()),
+    # path('listar-carritos/<int:pk>', CarritoView.as_view()),
+    # path('listar-carritos/', CarritoView.as_view()),
+    # path('listar-productos/<int:pk>/', ProductoView.as_view()),
+    # path('listar-productos/', ProductoView.as_view()),
+    # path('crear-detalle/', DetalleCarritoView.as_view()),
+    # path('listar-detalles/<int:pk>/', DetalleCarritoView.as_view()),
+    # path('listar-detalles/', DetalleCarritoView.as_view()),
+    # path('modificar-estado/<int:pk>', CarritoView.as_view()),
+
     #path('listar-productos/<int:pk>/', ListadoCarritoView.as_view()),
     
 

@@ -8,24 +8,24 @@ import { Col, Container, Row, Nav, Modal, Button } from 'react-bootstrap';
 
 
 const API = 'http://192.168.100.156:8000'
-//const API = process.env.BACKEND_API
+//const API = process.env.BACKEND_API;
+
 
 export const Carrito = () => {
 
     const { id } = useParams()
     const [ean, setEan] = useState(0)
     const [listaProd, setListaProd] = useState([])
+    const [counter, setCounter] = useState(0)
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    const [data, setData] = React.useState("Not Found");
-    const [torchOn, setTorchOn] = React.useState(false);
+    // const [data, setData] = React.useState("Not Found");
+    // const [torchOn, setTorchOn] = React.useState(false);
 
-    useEffect(() => {
-        listarProductos()
-    }, [])
+
 
     // useEffect(() => {
     //     const listarProductos = async () => {
@@ -36,10 +36,13 @@ export const Carrito = () => {
     //     listarProductos()
     // }, [])
 
+    useEffect(() => {
+        listarProductos();
+    }, [])
 
 
     const listarProductos = async () => {
-        const lista = await fetch(`${API}/listar-detalles/${id}/`, { 'mode': 'cors' })
+        const lista = await fetch(`${API}/detalle-carrito/${id}`, { 'mode': 'cors', 'method': 'GET' })
         const data = await lista.json()
         setListaProd(data)
         console.log(listaProd);
@@ -48,7 +51,7 @@ export const Carrito = () => {
 
     const agregarProducto = async () => {
         console.log(ean)
-        const res = await fetch(`${API}/crear-detalle/`, {
+        const res = await fetch(`${API}/detalle-carrito/`, {
             'mode': 'cors',
             'method': 'POST',
             'headers': { 'Content-Type': 'application/json' },
@@ -57,11 +60,21 @@ export const Carrito = () => {
                 "codigo_ean": ean,
                 "cantidad": 1
             })
+        
         });
         const data = await res.json();
         //alert("El producto fue agregado con éxito")
         console.log(data);
     }
+
+
+    const borrarProducto = async (idDetalle) => {
+        const res = await fetch(`${API}/detalle-carrito/${idDetalle}`, {
+            'mode': 'cors',
+            'method': 'DELETE'
+        })
+    }
+
 
 
 
@@ -73,26 +86,31 @@ export const Carrito = () => {
 
 
             <div className='main-pg'>
-                <Container fluid>
-                    <Row>
+                <Container fluid style={{ color: 'black', outline: 'solid', textAlign:'center', padding:'10px' }}>
+                    <Row fluid>
                         <Col>ID DETALLE</Col>
                         <Col>ID PRODUCTO</Col>
                         <Col>NOMBRE</Col>
-                        <Col>PRECIO</Col>
+                        <Col>PRECIO UNITARIO</Col>
                         <Col>CANTIDAD</Col>
+                        <Col>SUBTOTAL</Col>
+                        <Col></Col>
                     </Row>
                 </Container>
-                <Container fluid>
+                <Container fluid style={{ color: 'black', outline: 'solid' }}>
                     {listaProd.map(p => (
-                        <Row>
+                        <Row style={{ outline:'solid', padding:'20px', textAlign:'center',  }}>
                             <Col>{p.id}</Col>
                             <Col>{p.id_producto}</Col>
                             <Col>{p.nombre}</Col>
-                            <Col>{p.precio}</Col>
+                            <Col>$ {p.precio}</Col>
                             <Col>{p.cantidad}</Col>
+                            <Col>$ {(p.cantidad * p.precio).toFixed(2)}</Col>
+                            <Col> <Button variant='danger' onClick={() => borrarProducto(p.id)}>Borrar</Button> </Col>
                         </Row>
                     ))}
                 </Container>
+
 
                 <input className='ean-input'
                     placeholder='Ingrese el código EAN del producto'

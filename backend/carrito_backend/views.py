@@ -87,6 +87,12 @@ class DetalleCarritoView(generics.CreateAPIView):
         
         return Response(serializer.data, status=200)
     
+    def delete(self, request, pk):
+        detalle = DetalleCarrito.objects.get(id=pk)
+        detalle.delete()
+        return Response(status=200)
+
+    
 
 
 class ProductoView(generics.CreateAPIView):
