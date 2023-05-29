@@ -11,8 +11,8 @@ function App() {
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<MainPage/>}/>
-          <Route path="/carrito/:id" element={<Carrito/>}/>
+          <Route path="/:idSuper" element={<MainPage/>}/>
+          <Route path="/:idSuper/carrito/:id" element={<Carrito/>}/>
           <Route path="/scanner" element={<BarcodeScanner/>}/>
         </Routes>
       </div>

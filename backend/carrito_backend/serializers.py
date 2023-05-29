@@ -16,3 +16,8 @@ class DetalleCarritoSerializer(serializers.ModelSerializer):
     class Meta:
         model = DetalleCarrito
         fields = '__all__'
+
+class SupermercadoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supermercado
+        fields = '__all__'

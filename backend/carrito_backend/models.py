@@ -2,11 +2,17 @@ from django.db import models
 
 # Create your models here.
 
+class Supermercado(models.Model):
+    nombre=models.CharField(max_length=20)
+
+    def __str__(self):
+        return (self.nombre)
+
 class Producto(models.Model):
     nombre=models.CharField(max_length=60)
-    descripcion=models.CharField(max_length=300)
     precio=models.FloatField()
     codigo_ean=models.IntegerField()
+    supermercado=models.ForeignKey(Supermercado, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return (self.nombre)
@@ -19,6 +25,7 @@ class Carrito(models.Model):
     ]
     fecha=models.DateField(auto_now=False, auto_now_add=True)
     estado=models.CharField(max_length=1, default='N', choices=listaEstados)
+    supermercado=models.ForeignKey(Supermercado, on_delete=models.CASCADE, null=True)
     
     #TODO: Obtener el subtotal de los DetalleCarrito y sumarlos 
     @property
@@ -38,5 +45,8 @@ class DetalleCarrito(models.Model):
     @property
     def subtotal(self):
         return self.cantidad * self.id_producto.precio
+    
+
+
 
     

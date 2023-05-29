@@ -22,8 +22,13 @@ class CarritoView(generics.CreateAPIView):
         return Response(data, status=200)
 
     def post(self, request):
-        serializer = CarritoSerializer(data={})
+        print(request.data)
+        
+        data = { 
+            'supermercado': request.data['supermercado'] 
+            }
 
+        serializer = CarritoSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
         else:
@@ -58,7 +63,7 @@ class DetalleCarritoView(generics.CreateAPIView):
         
         
         # Obtener producto
-        producto = Producto.objects.get(codigo_ean=request.data['codigo_ean'])
+        producto = Producto.objects.get(codigo_ean=request.data['codigo_ean'], supermercado=carrito.supermercado)
 
         # Obtener detalle del carrito
         detalle_exist = DetalleCarrito.objects.filter(id_carrito=carrito.id, id_producto=producto.id)
@@ -74,7 +79,6 @@ class DetalleCarritoView(generics.CreateAPIView):
             'id_carrito': request.data['id_carrito'],
             'id_producto': producto.id,
             'nombre': producto.nombre,
-            'descripcion': producto.descripcion,
             'precio': producto.precio,
             'cantidad': request.data['cantidad']
         }
@@ -84,7 +88,6 @@ class DetalleCarritoView(generics.CreateAPIView):
             serializer.save()
         else:
             return Response(serializer.errors, status=500)
-        
         return Response(serializer.data, status=200)
     
     def delete(self, request, pk):
@@ -105,14 +108,36 @@ class ProductoView(generics.CreateAPIView):
             data = [ProductoSerializer(producto).data for producto in productos]
             return Response(data, status=200)
         
-        producto = Producto.objects.get(codigo_ean=pk)
-        data = ProductoSerializer(producto).data
+        productos = Producto.objects.filter(codigo_ean=pk)
+        data = [ProductoSerializer(prod).data for prod in productos]
+
+        #data = ProductoSerializer(producto).data
         return Response(data, status=200)
     
-# class ListadoCarritoView(generics.CreateAPIView):
+    def post(self, request):
+        productos = request.data["values"]
 
-#     def get(self, request, pk):
-#         productosCarrito = DetalleCarrito.objects.filter(id_producto=pk)
-#         data = [DetalleCarritoSerializer(prod).data for prod in productosCarrito]
-#         return Response(data, status=200)
+        for producto in productos:
+            producto[2] = producto[2].replace(',','.')
+            producto[2] = float(producto[2]) + 50
+            producto[2] = str(producto[2])
+            data = {
+                'nombre': producto[1],
+                'precio': producto[2],
+                'codigo_ean': producto[0],
+                'supermercado': 2
+            }
+            serializer = ProductoSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()        
+        return Response(status=200)
+    
+class SupermercadoView(generics.CreateAPIView):
+    serializer_class = SupermercadoSerializer
+    
+    def get(self, request, pk):
+        supermercado = Supermercado.objects.get(id=pk)
+        data = SupermercadoSerializer(supermercado).data
+        return Response(data=data, status=200)
+            
 

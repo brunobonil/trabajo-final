@@ -30,6 +30,9 @@ urlpatterns = [
     path('productos/', ProductoView.as_view()),
     path('productos/<int:pk>', ProductoView.as_view()),
 
+    path('supermercado/', SupermercadoView.as_view()),
+    path('supermercado/<int:pk>', SupermercadoView.as_view()),
+
     # path('crear-carrito/', CarritoView.as_view()),
     # path('listar-carritos/<int:pk>', CarritoView.as_view()),
     # path('listar-carritos/', CarritoView.as_view()),
@@ -41,6 +44,5 @@ urlpatterns = [
     # path('modificar-estado/<int:pk>', CarritoView.as_view()),
 
     #path('listar-productos/<int:pk>/', ListadoCarritoView.as_view()),
-    
 
 ]

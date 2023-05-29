@@ -7,16 +7,19 @@ import Camera from './Camera'
 import { Col, Container, Row, Nav, Modal, Button } from 'react-bootstrap';
 
 
-const API = 'http://192.168.100.156:8000'
-//const API = process.env.BACKEND_API;
+//const API = 'http://192.168.100.156:8000'
+const API = 'http://192.168.1.59:8000'
+//const API = process.env.BACKEND_API
 
 
 export const Carrito = () => {
 
-    const { id } = useParams()
+    const { id, idSuper } = useParams()
+    const [nombreSuper, setNombreSuper] = useState('')
     const [ean, setEan] = useState(0)
     const [listaProd, setListaProd] = useState([])
-    const [counter, setCounter] = useState(0)
+    const [count, setCount] = useState(0)
+    const [total, setTotal] = useState(0)
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -25,28 +28,44 @@ export const Carrito = () => {
     // const [data, setData] = React.useState("Not Found");
     // const [torchOn, setTorchOn] = React.useState(false);
 
-
-
-    // useEffect(() => {
-    //     const listarProductos = async () => {
-    //         const lista = await fetch(`${API}/listar-detalles/${id}`, {'mode': 'cors'});
-    //         const data = await lista.json();
-    //         setListaProd(data);
-    //     }
-    //     listarProductos()
-    // }, [])
+    const listarProductos = async () => {
+        const lista = await fetch(`${API}/detalle-carrito/${id}`, { 'mode': 'cors', 'method': 'GET' });
+        const data = await lista.json();
+        setListaProd(data);
+        var aux = 0;
+        listaProd.forEach((p) => {
+            console.log(p)
+            aux += p.cantidad * p.precio
+        })
+        setTotal(aux.toFixed(2))
+    }
 
     useEffect(() => {
-        listarProductos();
-    }, [])
+        listarProductos()
+        nombreSupermercado()
+    }, [count])
+
+    useEffect(() => {
+        listarProductos()
+    }, [total])
 
 
-    const listarProductos = async () => {
-        const lista = await fetch(`${API}/detalle-carrito/${id}`, { 'mode': 'cors', 'method': 'GET' })
-        const data = await lista.json()
-        setListaProd(data)
-        console.log(listaProd);
-    }
+    // const calcularTotal = () => {
+    //     var aux = 0;
+    //     listaProd.forEach((p) => {
+    //         console.log(p)
+    //         aux += p.cantidad * p.precio
+    //     })
+    //     setTotal(aux)
+    //     console.log(total)
+    // }
+
+    // const listarProductos = async () => {
+    //     const lista = await fetch(`${API}/detalle-carrito/${id}`, { 'mode': 'cors', 'method': 'GET' });
+    //     const data = await lista.json();
+    //     setListaProd(data);
+    //     console.log(listaProd);
+    // }
 
 
     const agregarProducto = async () => {
@@ -60,13 +79,16 @@ export const Carrito = () => {
                 "codigo_ean": ean,
                 "cantidad": 1
             })
-        
+
         });
         const data = await res.json();
         //alert("El producto fue agregado con éxito")
         console.log(data);
     }
 
+    const handleClick = () => {
+        setCount(count + 1); // Update the state value
+    };
 
     const borrarProducto = async (idDetalle) => {
         const res = await fetch(`${API}/detalle-carrito/${idDetalle}`, {
@@ -75,19 +97,23 @@ export const Carrito = () => {
         })
     }
 
-
-
-
+    const nombreSupermercado = async () => {
+        const res = await fetch(`${API}/supermercado/${idSuper}`, { 'method': 'GET', 'mode': 'cors' })
+        const data = await res.json()
+        setNombreSuper(data.nombre)
+    }
     return (
         <div>
-            <Nav className='justify-content-center navbar'>
-                CARRITO Nº {id}
+            <Nav style={{backgroundColor: 'crimson'}}>
+                <Nav.Item style={{}}> Supermercado: {nombreSuper}</Nav.Item>
+                <Nav.Item style={{display:'flex', justifyContent:'center', alignItems: 'center'}}> CARRITO Nº {id}</Nav.Item>
+
             </Nav>
 
 
             <div className='main-pg'>
-                <Container fluid style={{ color: 'black', outline: 'solid', textAlign:'center', padding:'10px' }}>
-                    <Row fluid>
+                <Container fluid style={{ color: 'black', outline: 'solid', textAlign: 'center', padding: '10px', backgroundColor: 'lightblue' }}>
+                    <Row >
                         <Col>ID DETALLE</Col>
                         <Col>ID PRODUCTO</Col>
                         <Col>NOMBRE</Col>
@@ -98,17 +124,22 @@ export const Carrito = () => {
                     </Row>
                 </Container>
                 <Container fluid style={{ color: 'black', outline: 'solid' }}>
-                    {listaProd.map(p => (
-                        <Row style={{ outline:'solid', padding:'20px', textAlign:'center',  }}>
+                    {listaProd.map((p, index) => (
+                        <Row key={index} style={{ outline: 'solid', padding: '20px', textAlign: 'center', }}>
                             <Col>{p.id}</Col>
                             <Col>{p.id_producto}</Col>
                             <Col>{p.nombre}</Col>
                             <Col>$ {p.precio}</Col>
                             <Col>{p.cantidad}</Col>
                             <Col>$ {(p.cantidad * p.precio).toFixed(2)}</Col>
-                            <Col> <Button variant='danger' onClick={() => borrarProducto(p.id)}>Borrar</Button> </Col>
+                            <Col> <Button variant='danger' onClick={() => { borrarProducto(p.id); listarProductos(); handleClick() }}>Borrar</Button> </Col>
                         </Row>
                     ))}
+                </Container>
+                <Container fluid style={{ color: 'black', outline: 'solid', textAlign: 'center', padding: '10px', backgroundColor: 'lightblue' }}>
+                    <Row>
+                        <Col style={{ fontWeight: 'bold' }}>TOTAL ${total}</Col>
+                    </Row>
                 </Container>
 
 
@@ -117,10 +148,12 @@ export const Carrito = () => {
                     type='number'
                     onChange={(e) => setEan(e.target.value)}>
                 </input>
-                <Button variant='danger'
+                {/* <p style={{ color: 'black' }}>Count: {count}</p>
+                <button onClick={handleClick}>Increment</button> */}
+                <Button variant='success'
                     size='lg'
                     className='add-btn'
-                    onClick={() => { agregarProducto(); listarProductos();}}>
+                    onClick={() => { agregarProducto(); handleClick(); }}>
                     +
                 </Button>
                 {/* <Button size='lg' variant='success' onClick={() => handleShow()}>Scan</Button> */}
@@ -133,7 +166,7 @@ export const Carrito = () => {
                     <Modal.Title>Escanear producto</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                <Camera></Camera>
+                    <Camera></Camera>
 
                 </Modal.Body>
             </Modal>
