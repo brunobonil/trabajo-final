@@ -21,11 +21,11 @@
 }
 
 .navbar {
-  background-color: rgb(0, 0, 86);
-  align-content: center;
+  background-color: crimson;
+  /* align-content: center;
   text-align: center;
-  display: flex;
-  color: whitesmoke;
+  display: flex; */
+  color: black;
   font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
   font-size: x-large;
 }

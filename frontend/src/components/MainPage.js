@@ -4,8 +4,8 @@ import { redirect, useParams } from 'react-router-dom';
 
 
 
-//const API = 'http://192.168.100.156:8000'
-const API = 'http://192.168.1.59:8000'
+const API = 'https://192.168.100.156:8000'
+//const API = 'http://192.168.1.59:8000'
 //const API = process.env.BACKEND_API
 
 
@@ -28,7 +28,7 @@ export const MainPage = () => {
     })
     const data = await res.json();
     console.log(data)
-    window.location.href = `${idSuper}/carrito/${data.id}`;
+    window.location.href = `/${idSuper}/carrito/${data.id}`;
   }
 
   const nombreSupermercado = async () => {

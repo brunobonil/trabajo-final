@@ -1,14 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
 import '../App.css';
 import { redirect, useParams } from 'react-router';
-//import BarcodeScanner from './MyScanner.js'
-import BarcodeScanner from './BarcodeScanner'
-import Camera from './Camera'
 import { Col, Container, Row, Nav, Modal, Button } from 'react-bootstrap';
+import { Html5QrcodeScanner } from 'html5-qrcode';
+//import BarcodeScanner from './MyScanner'
+//import BarcodeScanner from './BarcodeScanner'
+//import Escaner from './Scanner';
 
 
-//const API = 'http://192.168.100.156:8000'
-const API = 'http://192.168.1.59:8000'
+const API = 'https://192.168.100.156:8000'
+//const API = 'http://192.168.1.59:8000'
 //const API = process.env.BACKEND_API
 
 
@@ -19,6 +20,7 @@ export const Carrito = () => {
     const [ean, setEan] = useState(0)
     const [listaProd, setListaProd] = useState([])
     const [count, setCount] = useState(0)
+    const [scanCount, setScanCount] = useState(0)
     const [total, setTotal] = useState(0)
 
     const [show, setShow] = useState(false);
@@ -43,6 +45,7 @@ export const Carrito = () => {
     useEffect(() => {
         listarProductos()
         nombreSupermercado()
+        listarProductos()
     }, [count])
 
     useEffect(() => {
@@ -50,26 +53,8 @@ export const Carrito = () => {
     }, [total])
 
 
-    // const calcularTotal = () => {
-    //     var aux = 0;
-    //     listaProd.forEach((p) => {
-    //         console.log(p)
-    //         aux += p.cantidad * p.precio
-    //     })
-    //     setTotal(aux)
-    //     console.log(total)
-    // }
 
-    // const listarProductos = async () => {
-    //     const lista = await fetch(`${API}/detalle-carrito/${id}`, { 'mode': 'cors', 'method': 'GET' });
-    //     const data = await lista.json();
-    //     setListaProd(data);
-    //     console.log(listaProd);
-    // }
-
-
-    const agregarProducto = async () => {
-        console.log(ean)
+    const agregarProducto = async (ean) => {
         const res = await fetch(`${API}/detalle-carrito/`, {
             'mode': 'cors',
             'method': 'POST',
@@ -102,19 +87,49 @@ export const Carrito = () => {
         const data = await res.json()
         setNombreSuper(data.nombre)
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const llamarScaner = () => {
+        setScanCount(scanCount + 1)
+    }
+
+    useEffect(() => {
+        const scanner = new Html5QrcodeScanner('reader', {
+            qrbox: {
+                width: 250,
+                height: 250,
+            },
+            fps: 10,
+        })
+
+        const success = (result) => {
+            scanner.clear()
+            setEan(result)
+            setTotal()
+            agregarProducto(result)
+            setCount(count + 1); // Update the state value
+            console.log(result)
+        }
+
+        const error = (err) => {
+            console.warn(err)
+        }
+        scanner.render(success, error);
+    }, [scanCount])
+
+
     return (
         <div>
-            <Nav style={{backgroundColor: 'crimson'}}>
+            <Nav className="navbar">
+                <Nav.Item style={{}}> CARRITO Nº {id}</Nav.Item>
                 <Nav.Item style={{}}> Supermercado: {nombreSuper}</Nav.Item>
-                <Nav.Item style={{display:'flex', justifyContent:'center', alignItems: 'center'}}> CARRITO Nº {id}</Nav.Item>
-
             </Nav>
 
 
             <div className='main-pg'>
                 <Container fluid style={{ color: 'black', outline: 'solid', textAlign: 'center', padding: '10px', backgroundColor: 'lightblue' }}>
                     <Row >
-                        <Col>ID DETALLE</Col>
                         <Col>ID PRODUCTO</Col>
                         <Col>NOMBRE</Col>
                         <Col>PRECIO UNITARIO</Col>
@@ -126,7 +141,6 @@ export const Carrito = () => {
                 <Container fluid style={{ color: 'black', outline: 'solid' }}>
                     {listaProd.map((p, index) => (
                         <Row key={index} style={{ outline: 'solid', padding: '20px', textAlign: 'center', }}>
-                            <Col>{p.id}</Col>
                             <Col>{p.id_producto}</Col>
                             <Col>{p.nombre}</Col>
                             <Col>$ {p.precio}</Col>
@@ -153,21 +167,19 @@ export const Carrito = () => {
                 <Button variant='success'
                     size='lg'
                     className='add-btn'
-                    onClick={() => { agregarProducto(); handleClick(); }}>
+                    onClick={() => { agregarProducto(ean); handleClick(); }}>
                     +
                 </Button>
-                {/* <Button size='lg' variant='success' onClick={() => handleShow()}>Scan</Button> */}
+                <Button size='lg' variant='success' onClick={() => llamarScaner()}>Scan</Button>
+                <div id="reader"></div>
 
             </div>
-
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Escanear producto</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Camera></Camera>
-
                 </Modal.Body>
             </Modal>
 
