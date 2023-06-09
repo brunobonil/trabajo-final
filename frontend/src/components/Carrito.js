@@ -18,25 +18,24 @@ export const Carrito = () => {
     const [scanCount, setScanCount] = useState(0)
     const [total, setTotal] = useState(0)
     const [estado, setEstado] = useState('')
+    const [show, setShow] = useState(true);
 
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
 
-    // const [data, setData] = React.useState("Not Found");
-    // const [torchOn, setTorchOn] = React.useState(false);
 
-    if (listaProd.length > 0) {
-        const lista = fetch(`${API}/carrito/${id}`, { 
-            'mode': 'cors', 
-            'method': 'PATCH',
-            'headers': {'Content-Type': 'application/json'},
-            'body': JSON.stringify({
-                'estado': 'COMPRANDO'
-            })
-        });
-    }
-
+    useEffect(() => {
+        if (listaProd.length > 0) {
+            const lista = fetch(`${API}/carrito/${id}`, { 
+                'mode': 'cors', 
+                'method': 'PATCH',
+                'headers': {'Content-Type': 'application/json'},
+                'body': JSON.stringify({
+                    'estado': 'COMPRANDO'
+                })
+            });
+        setShow(false)
+        } else {setShow(true)}
+        getCarrito()
+    })
     const listarProductos = async () => {
         const lista = await fetch(`${API}/detalle-carrito/${id}`, { 'mode': 'cors', 'method': 'GET' });
         const data = await lista.json();
@@ -137,9 +136,9 @@ export const Carrito = () => {
     return (
         <div>
             <Nav className="navbar">
-                <Nav.Item style={{}}> CARRITO Nº {id}</Nav.Item>
+                <Nav.Item style={{fontWeight:'bold', paddingLeft:'10px'}}> CARRITO Nº {id}</Nav.Item>
                 <Nav.Item style={{}}> Estado: {estado}</Nav.Item>
-                <Nav.Item style={{}}> Supermercado: {nombreSuper}</Nav.Item>
+                <Nav.Item style={{paddingRight:'10px'}}> Supermercado: {nombreSuper}</Nav.Item>
             </Nav>
 
 
@@ -165,6 +164,7 @@ export const Carrito = () => {
                             <Col> <Button variant='danger' onClick={() => { borrarProducto(p.id); listarProductos(); handleClick() }}>Borrar</Button> </Col>
                         </Row>
                     ))}
+                    {show ? <div style={{padding:'15px', fontWeight:'bold', textAlign:'center'}}> ¡El carrito está vacío! </div> : <></>}
                 </Container>
                 <Container fluid style={{ color: 'black', outline: 'solid', textAlign: 'center', padding: '10px', backgroundColor: 'lightblue' }}>
                     <Row>
@@ -204,17 +204,6 @@ export const Carrito = () => {
                 </Container>
                 <div id="reader"></div>
             </div>
-
-
-
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Escanear producto</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                </Modal.Body>
-            </Modal>
-
         </div>
 
     );
