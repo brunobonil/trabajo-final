@@ -19,12 +19,12 @@ class Producto(models.Model):
 
 class Carrito(models.Model):
     listaEstados = [
-        ('N', 'NUEVO'),
-        ('C', 'COMPRANDO'),
-        ('F', 'FINALIZADO')
+        ('NUEVO', 'NUEVO'),
+        ('COMPRANDO', 'COMPRANDO'),
+        ('FINALIZADO', 'FINALIZADO')
     ]
     fecha=models.DateField(auto_now=False, auto_now_add=True)
-    estado=models.CharField(max_length=1, default='N', choices=listaEstados)
+    estado=models.CharField(max_length=10, default='NUEVO', choices=listaEstados)
     supermercado=models.ForeignKey(Supermercado, on_delete=models.CASCADE, null=True)
     
     #TODO: Obtener el subtotal de los DetalleCarrito y sumarlos 
@@ -45,8 +45,3 @@ class DetalleCarrito(models.Model):
     @property
     def subtotal(self):
         return self.cantidad * self.id_producto.precio
-    
-
-
-
-    

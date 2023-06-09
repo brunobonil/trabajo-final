@@ -1,10 +1,11 @@
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Routes, Route } from 'react-router';
 import './App.css';
-import { MainPage } from './components/MainPage';
+import MainPage from './components/MainPage';
 import Carrito from './components/Carrito';
+import PaginaPago from './components/PaginaPago';
+import ResumenCompra from './components/ResumenCompra'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import BarcodeScanner from './components/BarcodeScanner';
 
 function App() {
   return (
@@ -13,7 +14,8 @@ function App() {
         <Routes>
           <Route path="/:idSuper" element={<MainPage/>}/>
           <Route path="/:idSuper/carrito/:id" element={<Carrito/>}/>
-          <Route path="/scanner" element={<BarcodeScanner/>}/>
+          <Route path="/:idSuper/carrito/:id/pagar/" element={<PaginaPago/>}/>
+          <Route path="/:idSuper/carrito/:id/resumen/" element={<ResumenCompra/>}/>
         </Routes>
       </div>
     </Router>  

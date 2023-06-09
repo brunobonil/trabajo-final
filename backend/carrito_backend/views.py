@@ -37,7 +37,9 @@ class CarritoView(generics.CreateAPIView):
     
     def patch(self, request, pk):
         carrito = Carrito.objects.get(id=pk)
-        nuevoEstado = request.data["estado"]
+        print(carrito.estado)
+
+        nuevoEstado = request.data['estado']
         carrito.estado = nuevoEstado
         carrito.save()
         return Response(status=200)

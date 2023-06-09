@@ -3,14 +3,9 @@ import '../App.css';
 import { redirect, useParams } from 'react-router';
 import { Col, Container, Row, Nav, Modal, Button } from 'react-bootstrap';
 import { Html5QrcodeScanner } from 'html5-qrcode';
-//import BarcodeScanner from './MyScanner'
-//import BarcodeScanner from './BarcodeScanner'
-//import Escaner from './Scanner';
 
 
-const API = 'https://192.168.100.156:8000'
-//const API = 'http://192.168.1.59:8000'
-//const API = process.env.BACKEND_API
+const API = process.env.REACT_APP_BACKEND_API
 
 
 export const Carrito = () => {
@@ -22,6 +17,7 @@ export const Carrito = () => {
     const [count, setCount] = useState(0)
     const [scanCount, setScanCount] = useState(0)
     const [total, setTotal] = useState(0)
+    const [estado, setEstado] = useState('')
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -29,6 +25,17 @@ export const Carrito = () => {
 
     // const [data, setData] = React.useState("Not Found");
     // const [torchOn, setTorchOn] = React.useState(false);
+
+    if (listaProd.length > 0) {
+        const lista = fetch(`${API}/carrito/${id}`, { 
+            'mode': 'cors', 
+            'method': 'PATCH',
+            'headers': {'Content-Type': 'application/json'},
+            'body': JSON.stringify({
+                'estado': 'COMPRANDO'
+            })
+        });
+    }
 
     const listarProductos = async () => {
         const lista = await fetch(`${API}/detalle-carrito/${id}`, { 'mode': 'cors', 'method': 'GET' });
@@ -46,13 +53,18 @@ export const Carrito = () => {
         listarProductos()
         nombreSupermercado()
         listarProductos()
+        getCarrito()
     }, [count])
 
     useEffect(() => {
         listarProductos()
     }, [total])
 
-
+    const getCarrito = async () => {
+        const res = await fetch(`${API}/carrito/${id}`, { 'method': 'GET', 'mode': 'cors' })
+        const data = await res.json()
+        setEstado(data.estado)
+    }
 
     const agregarProducto = async (ean) => {
         const res = await fetch(`${API}/detalle-carrito/`, {
@@ -88,6 +100,9 @@ export const Carrito = () => {
         setNombreSuper(data.nombre)
     }
 
+    const handleRedirect = () => {
+        window.location.href = `/${idSuper}/carrito/${id}/pagar`
+    }
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const llamarScaner = () => {
@@ -123,6 +138,7 @@ export const Carrito = () => {
         <div>
             <Nav className="navbar">
                 <Nav.Item style={{}}> CARRITO Nº {id}</Nav.Item>
+                <Nav.Item style={{}}> Estado: {estado}</Nav.Item>
                 <Nav.Item style={{}}> Supermercado: {nombreSuper}</Nav.Item>
             </Nav>
 
@@ -157,23 +173,39 @@ export const Carrito = () => {
                 </Container>
 
 
-                <input className='ean-input'
+                {/* <input className='ean-input'
                     placeholder='Ingrese el código EAN del producto'
                     type='number'
                     onChange={(e) => setEan(e.target.value)}>
-                </input>
+                </input> */}
                 {/* <p style={{ color: 'black' }}>Count: {count}</p>
                 <button onClick={handleClick}>Increment</button> */}
-                <Button variant='success'
+
+                {/* <Button variant='success'
                     size='lg'
                     className='add-btn'
                     onClick={() => { agregarProducto(ean); handleClick(); }}>
                     +
-                </Button>
-                <Button size='lg' variant='success' onClick={() => llamarScaner()}>Scan</Button>
-                <div id="reader"></div>
+                </Button> */}
 
+                <Container style={{ padding: '25px' }}>
+                    <Row style={{ padding: '20px' }}>
+                        <Button size='lg' variant='success' onClick={() => llamarScaner()}>Scan</Button>
+                    </Row>
+                    <Row style={{ padding: '20px' }}>
+                        <Button
+                            variant='danger'
+                            style={{ padding: '15px' }}
+                            onClick={() => handleRedirect()}
+                        >
+                            Finalizar y pagar
+                        </Button>
+                    </Row>
+                </Container>
+                <div id="reader"></div>
             </div>
+
+
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>

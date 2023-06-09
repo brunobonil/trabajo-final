@@ -33,7 +33,10 @@ ALLOWED_HOSTS = ['192.168.100.156',
                 'localhost',
                 '0.0.0.0',
                 '192.168.1.13',
-                '192.168.1.59']
+                '192.168.1.59',
+                '192.168.1.82',
+                '192.168.1.11']
+                
 
 # # Enable HTTPS redirect
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

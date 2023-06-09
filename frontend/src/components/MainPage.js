@@ -3,10 +3,7 @@ import '../App.css';
 import { redirect, useParams } from 'react-router-dom';
 
 
-
-const API = 'https://192.168.100.156:8000'
-//const API = 'http://192.168.1.59:8000'
-//const API = process.env.BACKEND_API
+const API = process.env.REACT_APP_BACKEND_API
 
 
 
