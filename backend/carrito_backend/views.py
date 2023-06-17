@@ -49,14 +49,12 @@ class DetalleCarritoView(generics.CreateAPIView):
     serializer_class = DetalleCarritoSerializer
     
     def get(self, request, pk=None):
-        #if pk == None:
+
             productosCarrito = DetalleCarrito.objects.filter(id_carrito=pk)
             data = [DetalleCarritoSerializer(prod).data for prod in productosCarrito]
             return Response(data, status=200)
 
-        # carrito = DetalleCarrito.objects.get(id=pk)
-        # data = DetalleCarritoSerializer(carrito).data
-        # return Response(data, status=200)
+
 
     def post(self, request):
 
