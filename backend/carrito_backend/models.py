@@ -27,10 +27,13 @@ class Carrito(models.Model):
     estado=models.CharField(max_length=10, default='NUEVO', choices=listaEstados)
     supermercado=models.ForeignKey(Supermercado, on_delete=models.CASCADE, null=True)
     
-    #TODO: Obtener el subtotal de los DetalleCarrito y sumarlos 
     @property
     def precioTotal(self):
         lista_detalles = DetalleCarrito.objects.filter(id_carrito=self.id)
+        total = 0
+        for detalle in lista_detalles:
+            total += detalle.subtotal
+        return total
 
         
 

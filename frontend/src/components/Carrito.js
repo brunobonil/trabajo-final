@@ -77,9 +77,6 @@ export const Carrito = () => {
             })
 
         });
-        const data = await res.json();
-        //alert("El producto fue agregado con éxito")
-        console.log(data);
     }
 
     const handleClick = () => {
@@ -102,7 +99,7 @@ export const Carrito = () => {
     const handleRedirect = () => {
         window.location.href = `/${idSuper}/carrito/${id}/pagar`
     }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    
 
     const llamarScaner = () => {
         setScanCount(scanCount + 1)
@@ -172,14 +169,17 @@ export const Carrito = () => {
                     </Row>
                 </Container>
 
-
                 {/* <input className='ean-input'
                     placeholder='Ingrese el código EAN del producto'
                     type='number'
                     onChange={(e) => setEan(e.target.value)}>
                 </input> */}
-                {/* <p style={{ color: 'black' }}>Count: {count}</p>
-                <button onClick={handleClick}>Increment</button> */}
+                {/* <input className='ean-input'
+                    placeholder='Ingrese el código EAN del producto'
+                    type='number'
+                    onChange={(e) => setEan(e.target.value)}>
+                </input> */}
+               
 
                 {/* <Button variant='success'
                     size='lg'
@@ -190,7 +190,7 @@ export const Carrito = () => {
 
                 <Container style={{ padding: '25px' }}>
                     <Row style={{ padding: '20px' }}>
-                        <Button size='lg' variant='success' onClick={() => llamarScaner()}>Scan</Button>
+                        <Button size='lg' variant='success' onClick={() => llamarScaner()}>Escanear</Button>
                     </Row>
                     <Row style={{ padding: '20px' }}>
                         <Button

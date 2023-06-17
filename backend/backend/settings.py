@@ -67,6 +67,7 @@ INSTALLED_APPS = [
 
 RUNSERVERPLUS_SERVER_ADDRESS_PORT = '192.168.100.156:8000'
 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

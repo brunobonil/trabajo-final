@@ -47,6 +47,17 @@
   border: none;
 }
 
+.nav-backoffice {
+  background-color: grey;
+  justify-content: center;
+  font-size: xx-large;
+}
+
+.row-backoffice {
+  padding: 1rem;
+  font-weight: bold;
+  font-size: large;
+}
 
 .add-btn:hover {
   background-color: darkred;
@@ -54,13 +65,8 @@
 }
 
 .ean-input {
-  padding: 10px;
-  width: 15%;
-  display: flex;
+  padding: 5px;
+  display: flexbox;
   margin-top: 1rem;
-  width: 17%;
+  width: 55%;
 }
-/* 
-.lista-prod {
-  margin-right: 50%;
-} */
