@@ -5,6 +5,7 @@ import { Col, Container, Row, Nav, Modal, Button } from 'react-bootstrap';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 
 
+
 const API = process.env.REACT_APP_BACKEND_API
 
 
@@ -48,11 +49,21 @@ export const Carrito = () => {
         setTotal(aux.toFixed(2))
     }
 
+    const actualizarTotal = () => {
+        var aux = 0;
+        listaProd.forEach((p) => {
+            console.log(p)
+            aux += p.cantidad * p.precio
+        })
+        setTotal(aux.toFixed(2))
+    }
+
     useEffect(() => {
         listarProductos()
         nombreSupermercado()
         listarProductos()
         getCarrito()
+        
     }, [count])
 
     useEffect(() => {
@@ -164,8 +175,8 @@ export const Carrito = () => {
                     {show ? <div style={{padding:'15px', fontWeight:'bold', textAlign:'center'}}> ¡El carrito está vacío! </div> : <></>}
                 </Container>
                 <Container fluid style={{ color: 'black', outline: 'solid', textAlign: 'center', padding: '10px', backgroundColor: 'lightblue' }}>
-                    <Row>
-                        <Col style={{ fontWeight: 'bold' }}>TOTAL ${total}</Col>
+                    <Row className="justify-content-md-center">
+                        <Col xs={10} style={{ fontWeight: 'bold' }}>TOTAL ${total} <Button onClick={() => actualizarTotal()}>Recalcular</Button></Col>
                     </Row>
                 </Container>
 
