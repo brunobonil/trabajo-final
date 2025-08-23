@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  backend:
+    image: python:3.11-slim
+    container_name: django_backend
+    working_dir: /app
+    command: python manage.py runserver_plus 0.0.0.0:8000 --cert-file /certs/cert.pem --key-file /certs/key.pem
+    volumes:
+      - ./backend:/app
+      - ./certs:/certs:ro
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - frontend
+    # Install dependencies on container start
+    entrypoint: >
+      sh -c "
+      pip install --no-cache-dir -r requirements.txt &&
+      python manage.py migrate &&
+      exec python manage.py runserver_plus 0.0.0.0:8000 --cert-file /certs/cert.pem --key-file /certs/key.pem
+      "
+
+  frontend:
+    image: node:16
+    container_name: react_frontend
+    working_dir: /app
+    command: npm start
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - ./certs:/certs:ro
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - HTTPS=true
+      - SSL_CRT_FILE=/certs/cert.pem
+      - SSL_KEY_FILE=/certs/key.pem

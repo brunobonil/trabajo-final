@@ -68,7 +68,7 @@ class DetalleCarritoView(generics.CreateAPIView):
         # Obtener detalle del carrito
         detalle_exist = DetalleCarrito.objects.filter(id_carrito=carrito.id, id_producto=producto.id)
         
-        #Verifica si existe el producto en el carro, en caso de existir actualiza la cantidad   
+        # Verifica si existe el producto en el carro, en caso de existir actualiza la cantidad   
         if detalle_exist:
             detalle = detalle_exist.get()
             detalle.cantidad += 1

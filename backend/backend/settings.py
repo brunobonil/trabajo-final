@@ -26,16 +26,7 @@ SECRET_KEY = 'django-insecure-aapc+eka^o3-ap$g9nn)=4ov1r%e2e(-2@(flqh7n*hbjf=x(e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.100.156',
-                '127.0.0.1',
-                '192.168.100.133',
-                '192.168.100.10',
-                'localhost',
-                '0.0.0.0',
-                '192.168.1.13',
-                '192.168.1.59',
-                '192.168.1.82',
-                '192.168.1.11']
+ALLOWED_HOSTS = ['*']
                 
 
 # # Enable HTTPS redirect
@@ -65,7 +56,7 @@ INSTALLED_APPS = [
     'django_extensions',
 ]
 
-RUNSERVERPLUS_SERVER_ADDRESS_PORT = '192.168.100.156:8000'
+RUNSERVERPLUS_SERVER_ADDRESS_PORT = '0.0.0.0:8000'
 
 
 MIDDLEWARE = [
