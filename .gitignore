@@ -1,0 +1,14 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual envs
+venv/
+.env/
+
+# Local configs
+frontend/.env
+backend/.env
+nginx/
+old-docker-compose.yml
+

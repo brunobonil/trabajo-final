@@ -1,0 +1,21 @@
+# Ignore certbot runtime volumes
+nginx/certbot/conf
+nginx/certbot/www
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node modules
+frontend/node_modules
+backend/node_modules
+
+# Git
+.git
+.gitignore
+
+# Docker junk
+Dockerfile*
+docker-compose*.yml

@@ -1,0 +1,19 @@
+FROM python:3.10
+
+# Set working directory
+WORKDIR /app
+
+# Install Python dependencies
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt gunicorn
+
+# Copy the backend source code (won't override mounted volumes)
+COPY backend/ .
+
+# Expose the port (matches docker-compose)
+EXPOSE 8000
+
+# Use gunicorn for production-like server
+# But we will override this with dev server in docker-compose if needed
+CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]
+
