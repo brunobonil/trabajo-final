@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from rest_framework.decorators import api_view, permission_classes
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response 
 from rest_framework import generics 
 from .serializers import *
@@ -8,7 +11,7 @@ from .models import *
 
 class CarritoView(generics.CreateAPIView):
     serializer_class = CarritoSerializer
-    
+    permission_classes = [AllowAny]    
 
     def get(self, request, pk=None):
         if pk==None:
@@ -44,10 +47,9 @@ class CarritoView(generics.CreateAPIView):
         carrito.save()
         return Response(status=200)
     
-
 class DetalleCarritoView(generics.CreateAPIView):
     serializer_class = DetalleCarritoSerializer
-    
+    permission_classes = [AllowAny]
     def get(self, request, pk=None):
 
             productosCarrito = DetalleCarrito.objects.filter(id_carrito=pk)
@@ -97,10 +99,9 @@ class DetalleCarritoView(generics.CreateAPIView):
 
     
 
-
 class ProductoView(generics.CreateAPIView):
     serializer_class = ProductoSerializer
-
+    permission_classes = [AllowAny]
     def get(self, request, pk=None):
 
         if pk==None:
@@ -131,10 +132,10 @@ class ProductoView(generics.CreateAPIView):
             if serializer.is_valid():
                 serializer.save()        
         return Response(status=200)
-    
+
 class SupermercadoView(generics.CreateAPIView):
     serializer_class = SupermercadoSerializer
-    
+    permission_classes = [AllowAny]    
     def get(self, request, pk):
         supermercado = Supermercado.objects.get(id=pk)
         data = SupermercadoSerializer(supermercado).data
