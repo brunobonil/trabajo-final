@@ -20,6 +20,8 @@ export const Carrito = () => {
     const [total, setTotal] = useState(0)
     const [estado, setEstado] = useState('')
     const [show, setShow] = useState(true);
+    const [mensajeError, setMensajeError] = useState('');
+    const [mostrarError, setMostrarError] = useState(false);
 
 
 
@@ -37,6 +39,15 @@ export const Carrito = () => {
         } else {setShow(true)}
         getCarrito()
     })
+
+    const mostrarMensajeError = (mensaje) => {
+        setMensajeError(mensaje);
+        setMostrarError(true);
+        setTimeout(() => {
+            setMostrarError(false);
+        }, 3000); // El mensaje desaparecerá después de 3 segundos
+    };
+
     const listarProductos = async () => {
         const lista = await fetch(`${API}/detalle-carrito/${id}`, { 'mode': 'cors', 'method': 'GET' });
         const data = await lista.json();
@@ -49,26 +60,24 @@ export const Carrito = () => {
         setTotal(aux.toFixed(2))
     }
 
-    const actualizarTotal = () => {
-        var aux = 0;
+    useEffect(() => {
+        // Calcular el total automáticamente cuando listaProd cambie
+        let aux = 0;
         listaProd.forEach((p) => {
-            console.log(p)
-            aux += p.cantidad * p.precio
-        })
-        setTotal(aux.toFixed(2))
-    }
+            aux += p.cantidad * p.precio;
+        });
+        setTotal(aux.toFixed(2));
+    }, [listaProd]); // Escucha los cambios en listaProd
 
     useEffect(() => {
         listarProductos()
         nombreSupermercado()
-        listarProductos()
         getCarrito()
-        
     }, [count])
 
-    useEffect(() => {
-        listarProductos()
-    }, [total])
+    // useEffect(() => {
+    //     listarProductos()
+    // }, [total])
 
     const getCarrito = async () => {
         const res = await fetch(`${API}/carrito/${id}`, { 'method': 'GET', 'mode': 'cors' })
@@ -77,17 +86,31 @@ export const Carrito = () => {
     }
 
     const agregarProducto = async (ean) => {
-        const res = await fetch(`${API}/detalle-carrito/`, {
-            'mode': 'cors',
-            'method': 'POST',
-            'headers': { 'Content-Type': 'application/json' },
-            'body': JSON.stringify({
-                "id_carrito": id,
-                "codigo_ean": ean,
-                "cantidad": 1
-            })
+        try {
+            const res = await fetch(`${API}/detalle-carrito/`, {
+                'mode': 'cors',
+                'method': 'POST',
+                'headers': { 'Content-Type': 'application/json' },
+                'body': JSON.stringify({
+                    "id_carrito": id,
+                    "codigo_ean": ean,
+                    "cantidad": 1
+                })
 
-        });
+            });
+            if (res.ok) {
+                const data = await res.json();
+                console.log('Producto agregado:', data);
+                listarProductos(); // Actualiza la lista de productos después de agregar uno nuevo
+            } else if (res.status === 404) {
+                mostrarMensajeError('Producto no encontrado. Por favor, verifique el código EAN.');
+            } else {
+                mostrarMensajeError('Error al agregar el producto. Inténtelo de nuevo.');
+            }
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+            mostrarMensajeError('Error al agregar el producto. Inténtelo de nuevo.');
+        }   
     }
 
     const handleClick = () => {
@@ -140,6 +163,53 @@ export const Carrito = () => {
         scanner.render(success, error);
     }, [scanCount])
 
+    // Función para incrementar la cantidad de un producto
+    const incrementarCantidad = (idProducto) => {
+        const nuevaLista = listaProd.map((producto) => {
+            if (producto.id_producto === idProducto) {
+                return { ...producto, cantidad: producto.cantidad + 1 };
+            }
+            return producto;
+        });
+        setListaProd(nuevaLista);
+    };
+
+    // Función para disminuir la cantidad de un producto
+    const disminuirCantidad = (idProducto) => {
+        const nuevaLista = listaProd.map((producto) => {
+            if (producto.id_producto === idProducto && producto.cantidad > 1) {
+                return { ...producto, cantidad: producto.cantidad - 1 };
+            }
+            return producto;
+        });
+        setListaProd(nuevaLista);
+    };
+
+    const finalizarCompra = async () => {
+        try {
+            // Construir el cuerpo de la solicitud con el formato esperado por el backend
+            const detalles = listaProd.map((detalle) => ({
+                id: detalle.id, // Asegúrate de que este sea el campo correcto para identificar el producto
+                cantidad: detalle.cantidad,
+            }));
+
+            const res = await fetch(`${API}/detalle-carrito/`, {
+                method: 'PATCH',
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ detalles }),
+            });
+
+            if (res.ok) {
+                console.log("Compra finalizada con éxito");
+                handleRedirect(); // Redirigir al usuario a la página de pago
+            } else {
+                console.error("Error al finalizar la compra:", res.statusText);
+            }
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
+        }
+    };
 
     return (
         <div>
@@ -148,7 +218,6 @@ export const Carrito = () => {
                 <Nav.Item style={{}}> Estado: {estado}</Nav.Item>
                 <Nav.Item style={{paddingRight:'10px'}}> Supermercado: {nombreSuper}</Nav.Item>
             </Nav>
-
 
             <div className='main-pg'>
                 <Container fluid style={{ color: 'black', outline: 'solid', textAlign: 'center', padding: '10px', backgroundColor: 'lightblue' }}>
@@ -163,20 +232,28 @@ export const Carrito = () => {
                 </Container>
                 <Container fluid style={{ color: 'black', outline: 'solid' }}>
                     {listaProd.map((p, index) => (
-                        <Row key={index} style={{ outline: 'solid', padding: '20px', textAlign: 'center', }}>
+                        <Row key={index} style={{ outline: 'solid', padding: '20px', textAlign: 'center' }}>
                             <Col>{p.id_producto}</Col>
                             <Col>{p.nombre}</Col>
                             <Col>$ {p.precio}</Col>
-                            <Col>{p.cantidad}</Col>
+                            <Col>
+                                <Button variant="secondary" size="sm" onClick={() => disminuirCantidad(p.id_producto)}>-</Button>
+                                <span style={{ margin: '0 10px' }}>{p.cantidad}</span>
+                                <Button variant="secondary" size="sm" onClick={() => incrementarCantidad(p.id_producto)}>+</Button>
+                            </Col>
                             <Col>$ {(p.cantidad * p.precio).toFixed(2)}</Col>
-                            <Col> <Button variant='danger' onClick={() => { borrarProducto(p.id); listarProductos(); handleClick() }}>Borrar</Button> </Col>
+                            <Col>
+                                <Button variant="danger" onClick={() => { borrarProducto(p.id); listarProductos(); handleClick(); }}>
+                                    Borrar
+                                </Button>
+                            </Col>
                         </Row>
                     ))}
-                    {show ? <div style={{padding:'15px', fontWeight:'bold', textAlign:'center'}}> ¡El carrito está vacío! </div> : <></>}
+                    {show ? <div style={{ padding: '15px', fontWeight: 'bold', textAlign: 'center' }}> ¡El carrito está vacío! </div> : <></>}
                 </Container>
                 <Container fluid style={{ color: 'black', outline: 'solid', textAlign: 'center', padding: '10px', backgroundColor: 'lightblue' }}>
                     <Row className="justify-content-md-center">
-                        <Col xs={10} style={{ fontWeight: 'bold' }}>TOTAL ${total} <Button onClick={() => actualizarTotal()}>Recalcular</Button></Col>
+                        <Col xs={10} style={{ fontWeight: 'bold' }}>TOTAL ${total} </Col>
                     </Row>
                 </Container>
 
@@ -198,7 +275,22 @@ export const Carrito = () => {
                     onClick={() => { agregarProducto(ean); handleClick(); }}>
                     +
                 </Button> */}
-
+                {mostrarError && (
+                <div style={{
+                    position: 'fixed',
+                    top: '10px',
+                    right: '10px',
+                    backgroundColor: 'red',
+                    color: 'white',
+                    padding: '10px',
+                    borderRadius: '1rem',
+                    zIndex: 1000,
+                    transition: 'opacity 0.5s ease-in-out',
+                    opacity: mostrarError ? 1 : 0,
+                }}>
+                    {mensajeError} 
+                </div>)}
+                
                 <Container style={{ padding: '25px' }}>
                     <Row style={{ padding: '20px' }}>
                         <Button size='lg' variant='success' onClick={() => llamarScaner()}>Escanear</Button>
@@ -206,8 +298,8 @@ export const Carrito = () => {
                     <Row style={{ padding: '20px' }}>
                         <Button
                             variant='danger'
-                            style={{ padding: '15px' }}
-                            onClick={() => handleRedirect()}
+                            style={{ padding: '1rem' }}
+                            onClick={() => finalizarCompra()}
                         >
                             Finalizar y pagar
                         </Button>

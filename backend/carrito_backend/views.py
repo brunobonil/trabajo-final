@@ -56,16 +56,18 @@ class DetalleCarritoView(generics.CreateAPIView):
             data = [DetalleCarritoSerializer(prod).data for prod in productosCarrito]
             return Response(data, status=200)
 
-
-
     def post(self, request):
-
-        # Obtener carrito
-        carrito = Carrito.objects.get(id=request.data['id_carrito'])
+        try:
+            # Obtener carrito
+            carrito = Carrito.objects.get(id=request.data['id_carrito'])
+        except Carrito.DoesNotExist:
+            return Response({"error": "Carrito no encontrado"}, status=404)
         
-        
-        # Obtener producto
-        producto = Producto.objects.get(codigo_ean=request.data['codigo_ean'], supermercado=carrito.supermercado)
+        try:
+            # Obtener producto
+            producto = Producto.objects.get(codigo_ean=request.data['codigo_ean'], supermercado=carrito.supermercado)
+        except Producto.DoesNotExist:
+            return Response({"error": "Producto no encontrado en el supermercado del carrito"}, status=404)
 
         # Obtener detalle del carrito
         detalle_exist = DetalleCarrito.objects.filter(id_carrito=carrito.id, id_producto=producto.id)
@@ -92,10 +94,57 @@ class DetalleCarritoView(generics.CreateAPIView):
             return Response(serializer.errors, status=500)
         return Response(serializer.data, status=200)
     
+    # Método DELETE para eliminar un detalle del carrito
     def delete(self, request, pk):
-        detalle = DetalleCarrito.objects.get(id=pk)
-        detalle.delete()
-        return Response(status=200)
+        try:
+            detalle = DetalleCarrito.objects.get(id=pk)
+            detalle.delete()
+            return Response(status=200)
+        except DetalleCarrito.DoesNotExist:
+            return Response({"error": "Detalle no encontrado"}, status=404)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+
+    # Método PATCH para actualizar un detalle del carrito
+    def patch(self, request, pk=None):
+        try:
+            # Si se envía un solo producto (con `pk` en la URL)
+            if pk:
+                detalle = DetalleCarrito.objects.get(id=pk)
+                for key, value in request.data.items():
+                    if hasattr(detalle, key):
+                        setattr(detalle, key, value)
+                detalle.save()
+                serializer = DetalleCarritoSerializer(detalle)
+                return Response(serializer.data, status=200)
+
+            # Si se envía una lista de productos (sin `pk` en la URL)
+            else:
+                productos = request.data.get("detalles", [])
+                print(productos)
+                if not isinstance(productos, list):
+                    return Response({"error": "Se esperaba una lista de productos"}, status=400)
+
+                detalles_actualizados = []
+                for producto in productos:
+                    detalle_id = producto.get("id")
+                    if not detalle_id:
+                        return Response({"error": "Cada producto debe incluir un ID"}, status=400)
+
+                    try:
+                        detalle = DetalleCarrito.objects.get(id=detalle_id)
+                        for key, value in producto.items():
+                            if hasattr(detalle, key):
+                                setattr(detalle, key, value)
+                        detalle.save()
+                        detalles_actualizados.append(DetalleCarritoSerializer(detalle).data)
+                    except DetalleCarrito.DoesNotExist:
+                        return Response({"error": f"Detalle con ID {detalle_id} no encontrado"}, status=404)
+
+                return Response({"detalles_actualizados": detalles_actualizados}, status=200)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
 
     
 
@@ -140,5 +189,5 @@ class SupermercadoView(generics.CreateAPIView):
         supermercado = Supermercado.objects.get(id=pk)
         data = SupermercadoSerializer(supermercado).data
         return Response(data=data, status=200)
-            
+
 
