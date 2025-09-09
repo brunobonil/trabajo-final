@@ -52,9 +52,14 @@ class DetalleCarritoView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     def get(self, request, pk=None):
 
-            productosCarrito = DetalleCarrito.objects.filter(id_carrito=pk)
-            data = [DetalleCarritoSerializer(prod).data for prod in productosCarrito]
-            return Response(data, status=200)
+        productosCarrito = DetalleCarrito.objects.filter(id_carrito=pk)
+        data = []
+        for prod in productosCarrito:
+            producto_data = DetalleCarritoSerializer(prod).data
+            producto_data['codigo_ean'] = prod.id_producto.codigo_ean
+            data.append(producto_data)
+
+        return Response(data, status=200)
 
     def post(self, request):
         try:
