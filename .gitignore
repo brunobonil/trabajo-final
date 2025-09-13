@@ -11,6 +11,5 @@ frontend/.env
 backend/.env
 nginx/
 old-docker-compose.yml
-backend/db.sqlite3
 
 
