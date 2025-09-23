@@ -7,6 +7,8 @@ import PaginaPago from './components/PaginaPago';
 import ResumenCompra from './components/ResumenCompra'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Backoffice from './components/Backoffice';
+import { Login } from './components/Login';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -17,7 +19,16 @@ function App() {
           <Route path="/:idSuper/carrito/:id" element={<Carrito/>}/>
           <Route path="/:idSuper/carrito/:id/pagar/" element={<PaginaPago/>}/>
           <Route path="/:idSuper/carrito/:id/resumen/" element={<ResumenCompra/>}/>
-          <Route path=":idSuper/backoffice/" element={<Backoffice/>}/>
+          {/* <Route path=":idSuper/backoffice/" element={<Backoffice/>}/> */}
+          <Route path=":idSuper/login/" element={<Login/>}/>
+          <Route 
+            path="/:idSuper/backoffice" 
+            element={
+              <ProtectedRoute>
+                <Backoffice />
+              </ProtectedRoute>
+          } 
+        />
         </Routes>
       </div>
     </Router>  
